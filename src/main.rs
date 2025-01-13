@@ -22,6 +22,18 @@ fn main() {
 
     // TODO: Add working User Interface
     // Crate: https://v2.tauri.app/
+}
 
-    println!("Time Elapsed: {:?}", start.elapsed());
+fn set_local_tesseract_path(tesseract_path: &str) {
+    // Get the current PATH environment variable
+    let current_path = env::var("PATH").expect("Failed to get PATH");
+
+    // Append the new path to the PATH variable
+    let updated_path = format!("{};{}", current_path, tesseract_path);
+
+    // Update the local PATH for this process
+    env::set_var("PATH", &updated_path);
+
+    // Verify the update (prints the new PATH value)
+    println!("New PATH: {}", env::var("PATH").unwrap());
 }
