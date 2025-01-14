@@ -22,10 +22,9 @@ impl fmt::Display for SettingsError {
                 "Issue With Settings File: {}",
                 self.message.as_ref().unwrap_or(&String::new())
             ),
-            SettingsErrorCode::SerializeError | SettingsErrorCode::DeserializeError => &format!(
-                "Internal Error: {}",
-                self.message.as_ref().unwrap_or(&String::new())
-            ),
+            SettingsErrorCode::SerializeError | SettingsErrorCode::DeserializeError => {
+                &format!("Internal Error: {:?}", self.code)
+            }
         };
 
         write!(f, "{}", err_msg)
