@@ -7,6 +7,7 @@ use std::env;
 
 const SETTINGS_ERROR_SPACE: isize = 100;
 const SCREEN_CAP_ERROR_SPACE: isize = 200;
+const OCR_ERROR_SPACE: isize = 300;
 
 fn main() {
     // TODO: Read "Day" and "Night" using rusty-tesseract
