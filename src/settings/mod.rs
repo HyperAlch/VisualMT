@@ -1,62 +1,9 @@
-use crate::SETTINGS_ERROR_SPACE;
+mod error;
+
+use crate::settings::error::SettingsError;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 use std::fs::File;
 use std::io::Write;
-
-pub(crate) struct SettingsError {
-    code: SettingsErrorCode,
-    message: Option<String>,
-}
-#[derive(Debug)]
-enum SettingsErrorCode {
-    IoError = SETTINGS_ERROR_SPACE,
-    SerializeError,
-    DeserializeError,
-}
-
-impl fmt::Display for SettingsError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let err_msg = match self.code {
-            SettingsErrorCode::IoError => &format!(
-                "Issue With Settings File: {}",
-                self.message.as_ref().unwrap_or(&String::new())
-            ),
-            SettingsErrorCode::SerializeError | SettingsErrorCode::DeserializeError => {
-                &format!("Internal Error: {:?}", self.code)
-            }
-        };
-
-        write!(f, "{}", err_msg)
-    }
-}
-
-impl fmt::Debug for SettingsError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "SettingsError {{ code: {:?}, message: {} }}",
-            self.code,
-            self.message.as_ref().unwrap_or(&String::new())
-        )
-    }
-}
-
-impl SettingsError {
-    fn new<T: ToString>(code: SettingsErrorCode, message: Option<T>) -> Self {
-        let new_message: Option<String>;
-        if let Some(message) = message {
-            new_message = Some(message.to_string());
-        } else {
-            new_message = None
-        }
-
-        Self {
-            code,
-            message: new_message,
-        }
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Settings {
@@ -79,7 +26,7 @@ impl Settings {
             Ok(json) => json,
             Err(e) => {
                 return Err(SettingsError::new(
-                    SettingsErrorCode::SerializeError,
+                    error::SettingsErrorCode::SerializeError,
                     Some(e),
                 ))
             }
@@ -90,7 +37,7 @@ impl Settings {
             Ok(f) => f,
             Err(_) => {
                 return Err(SettingsError::new(
-                    SettingsErrorCode::IoError,
+                    error::SettingsErrorCode::IoError,
                     Some("Failed to create settings file"),
                 ))
             }
@@ -100,7 +47,7 @@ impl Settings {
         match file.write_all(json_data.as_bytes()) {
             Ok(_) => Ok(()),
             Err(_) => Err(SettingsError::new(
-                SettingsErrorCode::IoError,
+                error::SettingsErrorCode::IoError,
                 Some("Failed to write to settings file"),
             )),
         }
@@ -111,7 +58,7 @@ impl Settings {
             Ok(f) => f,
             Err(_) => {
                 return Err(SettingsError::new(
-                    SettingsErrorCode::IoError,
+                    error::SettingsErrorCode::IoError,
                     Some("Failed to open settings file"),
                 ))
             }
@@ -122,7 +69,7 @@ impl Settings {
             Ok(settings) => settings,
             Err(e) => {
                 return Err(SettingsError::new(
-                    SettingsErrorCode::DeserializeError,
+                    error::SettingsErrorCode::DeserializeError,
                     Some(e.to_string()),
                 ))
             }
