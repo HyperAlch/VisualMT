@@ -138,6 +138,11 @@ mod tests {
     use crate::settings::Settings;
 
     #[test]
+    fn test_save_and_load_settings() {
+        test_save_settings();
+        test_load_settings();
+    }
+
     fn test_save_settings() {
         let settings = Settings {
             ocr_monitor_number: 0,
@@ -161,7 +166,6 @@ mod tests {
         }
     }
 
-    #[test]
     fn test_load_settings() {
         let mut settings = Settings::default();
 
