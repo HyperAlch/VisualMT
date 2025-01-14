@@ -1,7 +1,8 @@
-use crate::settings::SettingsError;
 use crate::SCREEN_CAP_ERROR_SPACE;
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use xcap::image::imageops::crop;
+use xcap::image::RgbaImage;
 
 pub(crate) struct ScreenCapError {
     code: ScreenCapErrorCode,
@@ -11,6 +12,7 @@ pub(crate) struct ScreenCapError {
 #[derive(Debug)]
 enum ScreenCapErrorCode {
     MonitorNotFound = SCREEN_CAP_ERROR_SPACE,
+    SubImageOutOfBounds,
 }
 
 impl fmt::Display for ScreenCapError {
@@ -20,6 +22,7 @@ impl fmt::Display for ScreenCapError {
                 "Cannot find monitor: {}",
                 self.message.as_ref().unwrap_or(&String::new())
             ),
+            ScreenCapErrorCode::SubImageOutOfBounds => &format!("Internal Error: {:?}", self.code),
         };
 
         write!(f, "{}", err_msg)
@@ -83,6 +86,7 @@ mod tests {
 
         let ocr_image = ocr_monitor.capture_image().unwrap();
         let icon_image = icon_monitor.capture_image().unwrap();
+
         if settings.ocr_monitor_number != settings.icon_monitor_number {
             ocr_image
                 .save(format!(
@@ -117,4 +121,22 @@ mod tests {
 
         println!("Time Elapsed: {:?}", start.elapsed());
     }
+}
+
+fn capture_area_from_image<T: std::fmt::Display>(
+    image: &mut RgbaImage,
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+) -> Result<RgbaImage, ScreenCapError> {
+    if x + width > image.width() || y + height > image.height() {
+        return Err(ScreenCapError::new::<T>(
+            ScreenCapErrorCode::SubImageOutOfBounds,
+            None,
+        ));
+    }
+
+    let cropped_area = crop(image, x, y, width, height).to_image();
+    Ok(cropped_area)
 }
