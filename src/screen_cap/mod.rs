@@ -37,8 +37,8 @@ impl fmt::Debug for ScreenCapError {
     }
 }
 
-impl SettingsError {
-    fn new<T: ToString>(code: ScreenCapErrorCode, message: Option<T>) -> SettingsError {
+impl ScreenCapError {
+    fn new<T: ToString>(code: ScreenCapErrorCode, message: Option<T>) -> ScreenCapError {
         let new_message: Option<String>;
         if let Some(message) = message {
             new_message = Some(message.to_string());
@@ -46,7 +46,7 @@ impl SettingsError {
             new_message = None
         }
 
-        ScreenCapErrorCode {
+        Self {
             code,
             message: new_message,
         }

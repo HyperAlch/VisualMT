@@ -34,8 +34,8 @@ impl fmt::Debug for OcrError {
     }
 }
 
-impl SettingsError {
-    fn new<T: ToString>(code: OcrErrorCode, message: Option<T>) -> SettingsError {
+impl OcrError {
+    fn new<T: ToString>(code: OcrErrorCode, message: Option<T>) -> OcrError {
         let new_message: Option<String>;
         if let Some(message) = message {
             new_message = Some(message.to_string());
@@ -43,7 +43,7 @@ impl SettingsError {
             new_message = None
         }
 
-        OcrErrorCode {
+        Self {
             code,
             message: new_message,
         }

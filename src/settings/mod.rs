@@ -51,7 +51,7 @@ impl SettingsError {
             new_message = None
         }
 
-        SettingsError {
+        Self {
             code,
             message: new_message,
         }
