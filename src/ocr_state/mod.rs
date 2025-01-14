@@ -1,4 +1,3 @@
-use crate::settings::SettingsError;
 use crate::OCR_ERROR_SPACE;
 use std::fmt;
 use std::fmt::Formatter;
