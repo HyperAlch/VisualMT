@@ -43,7 +43,7 @@ impl fmt::Debug for SettingsError {
 }
 
 impl SettingsError {
-    fn new<T: ToString>(code: SettingsErrorCode, message: Option<T>) -> SettingsError {
+    fn new<T: ToString>(code: SettingsErrorCode, message: Option<T>) -> Self {
         let new_message: Option<String>;
         if let Some(message) = message {
             new_message = Some(message.to_string());

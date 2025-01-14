@@ -41,7 +41,7 @@ impl fmt::Debug for ScreenCapError {
 }
 
 impl ScreenCapError {
-    fn new<T: ToString>(code: ScreenCapErrorCode, message: Option<T>) -> ScreenCapError {
+    fn new<T: ToString>(code: ScreenCapErrorCode, message: Option<T>) -> Self {
         let new_message: Option<String>;
         if let Some(message) = message {
             new_message = Some(message.to_string());
