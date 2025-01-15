@@ -15,6 +15,7 @@ Trigger macros based on visual text and / or image indicators
 
 - [PicoCSS for the user interface style](https://picocss.com/)
 - [Svelte for user interface reactivity](https://svelte.dev/)
+- [Isolating trigger areas on captured frames](https://fabricjs.com/)
 
 ## Supported Custom Interfaces
 
