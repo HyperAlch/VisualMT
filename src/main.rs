@@ -38,3 +38,11 @@ fn set_local_tesseract_path(tesseract_path: &str) {
     // Verify the update (prints the new PATH value)
     println!("New PATH: {}", env::var("PATH").unwrap());
 }
+
+fn normalize_filename(filename: &str) -> String {
+    filename
+        .replace("|", "")
+        .replace("\\", "")
+        .replace(":", "")
+        .replace("/", "")
+}
