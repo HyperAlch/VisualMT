@@ -112,23 +112,43 @@ impl WindowList {
 #[cfg(test)]
 
 mod tests {
-    use crate::screen_cap::{ScreenCap, WindowList};
+    use crate::screen_cap::{capture_area_from_image, ScreenCap, WindowList};
+    use crate::settings::{global_settings, init_settings};
 
     #[test]
-    fn capture_window() {
+    fn capture_target() {
+        init_settings();
+        let ocr_x: u32;
+        let ocr_y: u32;
+        let ocr_width: u32;
+        let ocr_height: u32;
+
+        {
+            let settings = global_settings();
+            let mut writable_settings = settings
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+
+            if let Err(e) = writable_settings.load() {
+                panic!("{:?}", e);
+            }
+
+            ocr_x = writable_settings.ocr_x;
+            ocr_y = writable_settings.ocr_y;
+            ocr_width = writable_settings.ocr_width;
+            ocr_height = writable_settings.ocr_height;
+        }
         let all_windows = WindowList::new();
-        // println!("{:#?}", all_windows);
 
         let window = all_windows.filter_by_title("GW2");
         let window = window.get_vec();
 
-        let window = ScreenCap::new(window[0].1.clone());
-        window
-            .target_window
-            .capture_image()
-            .unwrap()
-            .save("./process-images/target_window.png")
+        let window = ScreenCap::new(window.get(0).unwrap().1.clone());
+        let mut image = window.target_window.capture_image().unwrap();
+        let captured_image =
+            capture_area_from_image(&mut image, ocr_x, ocr_y, ocr_width, ocr_height).unwrap();
+        captured_image
+            .save("./process-images/ocr_target.png")
             .unwrap();
-        println!("{:#?}", window);
     }
 }
