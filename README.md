@@ -21,6 +21,12 @@ Trigger macros based on visual text and / or image indicators
 
 - Guild Wars 2 | ReShaded3D (Work in progress)
 
+## Program Diagrams
+
+### Internal Overview
+
+![](./ExcaliDraw/export/OverviewInternal.png)
+
 ## Current progress
 
 **Very pre-alpha, the project was started on January 11th 2025**
