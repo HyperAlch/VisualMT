@@ -4,11 +4,12 @@ use crate::normalize_filename;
 use crate::screen_cap::error::ScreenCapError;
 use std::collections::HashMap;
 use std::fmt::Display;
+use std::string::String;
 use xcap::image::imageops::crop;
 use xcap::image::RgbaImage;
 use xcap::Window;
 
-fn capture_area_from_image<T: Display>(
+fn capture_area_from_image(
     image: &mut RgbaImage,
     x: u32,
     y: u32,
@@ -16,10 +17,21 @@ fn capture_area_from_image<T: Display>(
     height: u32,
 ) -> Result<RgbaImage, ScreenCapError> {
     if x + width > image.width() || y + height > image.height() {
-        return Err(ScreenCapError::new::<T>(
+        let error_message = format!(
+            "\nImage Width / Height: {}/{}\nX, Y: {},{}\nCapture Area Width / Height: {}/{}\n",
+            image.width(),
+            image.height(),
+            x,
+            y,
+            width,
+            height,
+        );
+
+        let error = Err(ScreenCapError::new::<String>(
             error::ScreenCapErrorCode::SubImageOutOfBounds,
-            None,
+            Some(error_message),
         ));
+        return error;
     }
 
     let cropped_area = crop(image, x, y, width, height).to_image();
