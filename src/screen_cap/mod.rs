@@ -91,14 +91,16 @@ impl WindowList {
 
         window_map
     }
+
+    pub(crate) fn window_has_resized(&self, window_name: &str) -> bool {
+        todo!()
+    }
 }
 
 #[cfg(test)]
 
 mod tests {
     use crate::screen_cap::{ScreenCap, WindowList};
-    use crate::settings::Settings;
-    use xcap::Monitor;
 
     #[test]
     fn capture_window() {
@@ -109,61 +111,12 @@ mod tests {
         let window = window.get_vec();
 
         let window = ScreenCap::new(window[0].1.clone());
+        window
+            .target_window
+            .capture_image()
+            .unwrap()
+            .save("./process-images/target_window.png")
+            .unwrap();
         println!("{:#?}", window);
-    }
-    #[test]
-    fn test_screen_cap() {
-        // Load settings
-        let mut settings = Settings::default();
-        settings.load().unwrap();
-
-        let result = std::fs::create_dir_all("./process-images/");
-        if result.is_err() {
-            println!("Error creating directory: {}", result.unwrap_err());
-        }
-
-        // Start XCap and save screenshots
-        let monitors = Monitor::all().unwrap();
-        let ocr_monitor = monitors
-            .get(settings.ocr_monitor_number)
-            .expect("Monitor not found");
-        let icon_monitor = monitors
-            .get(settings.icon_monitor_number)
-            .expect("Monitor not found");
-
-        let ocr_image = ocr_monitor.capture_image().unwrap();
-        let icon_image = icon_monitor.capture_image().unwrap();
-
-        if settings.ocr_monitor_number != settings.icon_monitor_number {
-            ocr_image
-                .save(format!(
-                    "./process-images/monitor-ocr-{}.png",
-                    settings.ocr_monitor_number
-                ))
-                .unwrap();
-
-            icon_image
-                .save(format!(
-                    "./process-images/monitor-icon-{}.png",
-                    settings.icon_monitor_number
-                ))
-                .unwrap();
-        } else {
-            let image = icon_monitor.capture_image().unwrap();
-
-            image
-                .save(format!(
-                    "./process-images/monitor-ocr-{}.png",
-                    settings.ocr_monitor_number
-                ))
-                .unwrap();
-
-            image
-                .save(format!(
-                    "./process-images/monitor-icon-{}.png",
-                    settings.icon_monitor_number
-                ))
-                .unwrap();
-        }
     }
 }
