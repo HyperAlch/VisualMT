@@ -26,14 +26,14 @@ pub fn global_settings() -> &'static Mutex<Settings> {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Settings {
-    pub(crate) ocr_x: u16,
-    pub(crate) ocr_y: u16,
-    pub(crate) ocr_width: u16,
-    pub(crate) ocr_height: u16,
-    pub(crate) icon_x: u16,
-    pub(crate) icon_y: u16,
-    pub(crate) icon_width: u16,
-    pub(crate) icon_height: u16,
+    pub(crate) ocr_x: u32,
+    pub(crate) ocr_y: u32,
+    pub(crate) ocr_width: u32,
+    pub(crate) ocr_height: u32,
+    pub(crate) icon_x: u32,
+    pub(crate) icon_y: u32,
+    pub(crate) icon_width: u32,
+    pub(crate) icon_height: u32,
 }
 
 impl Settings {
