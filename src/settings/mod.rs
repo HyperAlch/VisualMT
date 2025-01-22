@@ -26,12 +26,10 @@ pub fn global_settings() -> &'static Mutex<Settings> {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Settings {
-    pub(crate) ocr_monitor_number: usize,
     pub(crate) ocr_x: u16,
     pub(crate) ocr_y: u16,
     pub(crate) ocr_width: u16,
     pub(crate) ocr_height: u16,
-    pub(crate) icon_monitor_number: usize,
     pub(crate) icon_x: u16,
     pub(crate) icon_y: u16,
     pub(crate) icon_width: u16,
@@ -119,12 +117,10 @@ mod tests {
                 .lock()
                 .unwrap_or_else(|poisoned| poisoned.into_inner());
 
-            writable_settings.ocr_monitor_number = 0;
             writable_settings.ocr_x = 0;
             writable_settings.ocr_y = 0;
             writable_settings.ocr_width = 5000;
             writable_settings.ocr_height = 300;
-            writable_settings.icon_monitor_number = 0;
             writable_settings.icon_x = 100;
             writable_settings.icon_y = 100;
             writable_settings.icon_width = 50;
@@ -152,13 +148,11 @@ mod tests {
 
     fn test_save_settings() {
         let settings = Settings {
-            ocr_monitor_number: 0,
             ocr_x: 0,
             ocr_y: 0,
             ocr_width: 600,
             ocr_height: 300,
 
-            icon_monitor_number: 0,
             icon_x: 100,
             icon_y: 100,
             icon_width: 50,
