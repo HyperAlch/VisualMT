@@ -9,35 +9,6 @@ use xcap::image::imageops::crop;
 use xcap::image::RgbaImage;
 use xcap::Window;
 
-fn capture_area_from_image(
-    image: &mut RgbaImage,
-    x: u32,
-    y: u32,
-    width: u32,
-    height: u32,
-) -> Result<RgbaImage, ScreenCapError> {
-    if x + width > image.width() || y + height > image.height() {
-        let error_message = format!(
-            "\nImage Width / Height: {}/{}\nX, Y: {},{}\nCapture Area Width / Height: {}/{}\n",
-            image.width(),
-            image.height(),
-            x,
-            y,
-            width,
-            height,
-        );
-
-        let error = Err(ScreenCapError::new::<String>(
-            error::ScreenCapErrorCode::SubImageOutOfBounds,
-            Some(error_message),
-        ));
-        return error;
-    }
-
-    let cropped_area = crop(image, x, y, width, height).to_image();
-    Ok(cropped_area)
-}
-
 #[derive(Debug)]
 struct ScreenCap {
     target_window: Window,
@@ -46,6 +17,45 @@ struct ScreenCap {
 impl ScreenCap {
     pub(crate) fn new(target_window: Window) -> Self {
         Self { target_window }
+    }
+
+    pub(crate) fn capture_area(
+        &self,
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<RgbaImage, ScreenCapError> {
+        let mut image = match self.target_window.capture_image() {
+            Ok(i) => i,
+            Err(e) => {
+                return Err(ScreenCapError::new::<String>(
+                    error::ScreenCapErrorCode::SubImageOutOfBounds,
+                    Some(e.to_string()),
+                ));
+            }
+        };
+
+        if x + width > image.width() || y + height > image.height() {
+            let error_message = format!(
+                "\nImage Width / Height: {}/{}\nX, Y: {},{}\nCapture Area Width / Height: {}/{}\n",
+                image.width(),
+                image.height(),
+                x,
+                y,
+                width,
+                height,
+            );
+
+            let error = Err(ScreenCapError::new::<String>(
+                error::ScreenCapErrorCode::SubImageOutOfBounds,
+                Some(error_message),
+            ));
+            return error;
+        }
+
+        let cropped_area = crop(&mut image, x, y, width, height).to_image();
+        Ok(cropped_area)
     }
 }
 
@@ -112,7 +122,7 @@ impl WindowList {
 #[cfg(test)]
 
 mod tests {
-    use crate::screen_cap::{capture_area_from_image, ScreenCap, WindowList};
+    use crate::screen_cap::{ScreenCap, WindowList};
     use crate::settings;
     use crate::settings::{global_settings, init_settings};
 
@@ -149,31 +159,28 @@ mod tests {
         let window = window.get_vec();
         let window = ScreenCap::new(window.get(0).unwrap().1.clone());
 
-        // Get image from target window
-        let mut image = window.target_window.capture_image().unwrap();
-
         // Capture and save OCR image
-        let captured_ocr_image = capture_area_from_image(
-            &mut image,
-            local_settings.ocr_x,
-            local_settings.ocr_y,
-            local_settings.ocr_width,
-            local_settings.ocr_height,
-        )
-        .unwrap()
-        .save("./process-images/ocr_target.png")
-        .unwrap();
+        let captured_ocr_image = window
+            .capture_area(
+                local_settings.ocr_x,
+                local_settings.ocr_y,
+                local_settings.ocr_width,
+                local_settings.ocr_height,
+            )
+            .unwrap()
+            .save("./process-images/ocr_target.png")
+            .unwrap();
 
         // Capture and save icon image
-        let captured_icon_image = capture_area_from_image(
-            &mut image,
-            local_settings.icon_x,
-            local_settings.icon_y,
-            local_settings.icon_width,
-            local_settings.icon_height,
-        )
-        .unwrap()
-        .save("./process-images/icon_target.png")
-        .unwrap();
+        let captured_icon_image = window
+            .capture_area(
+                local_settings.icon_x,
+                local_settings.icon_y,
+                local_settings.icon_width,
+                local_settings.icon_height,
+            )
+            .unwrap()
+            .save("./process-images/icon_target.png")
+            .unwrap();
     }
 }

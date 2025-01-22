@@ -11,6 +11,7 @@ pub(crate) struct ScreenCapError {
 pub(crate) enum ScreenCapErrorCode {
     MonitorNotFound = SCREEN_CAP_ERROR_SPACE,
     SubImageOutOfBounds,
+    XCapError,
 }
 
 impl fmt::Display for ScreenCapError {
@@ -20,7 +21,9 @@ impl fmt::Display for ScreenCapError {
                 "Cannot find monitor: {}",
                 self.message.as_ref().unwrap_or(&String::new())
             ),
-            ScreenCapErrorCode::SubImageOutOfBounds => &format!("Internal Error: {:?}", self.code),
+            ScreenCapErrorCode::SubImageOutOfBounds | ScreenCapErrorCode::XCapError => {
+                &format!("Internal Error: {:?}", self.code)
+            }
         };
 
         write!(f, "{}", err_msg)
